@@ -19,6 +19,8 @@ current_dir = Path(__file__).parent
 app.mount("/static", StaticFiles(directory=os.path.join(Path(__file__).parent,
           "static")), name="static")
 
+from typing import Optional
+
 # In-memory activity database
 activities = {
     "Chess Club": {
@@ -75,6 +77,13 @@ activities = {
         "max_participants": 12,
         "participants": ["charlotte@mergington.edu", "henry@mergington.edu"]
     }
+@app.put("/activities/{activity_name}/schedule")
+def set_activity_schedule(activity_name: str, schedule: str):
+    """Allow organizers to set a custom time for an activity"""
+    if activity_name not in activities:
+        raise HTTPException(status_code=404, detail="Activity not found")
+    activities[activity_name]["schedule"] = schedule
+    return {"message": f"Schedule for {activity_name} updated to '{schedule}'"}
 }
 
 
